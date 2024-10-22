@@ -24,10 +24,15 @@ const AccountPage: React.FC = () => {
   };
   
 
-  const fetchOrders = async () => {
+    const fetchOrders = async () => {
     try {
       const response = await api.user.getOrders();
-      setOrders(response.data);
+      const ordersWithDates = response.data.map(order => ({
+        ...order,
+        id: order._id,
+        createdAt: new Date(order.createdAt)
+      }));
+      setOrders(ordersWithDates);
     } catch (error) {
       console.error('Error fetching orders:', error);
     }
@@ -48,7 +53,7 @@ const AccountPage: React.FC = () => {
       case 'profile':
         return userProfile ? <ProfileTab  prof={userProfile} /> : <div>Loading...</div>;
       case 'orders':
-        return <OrdersTab />;
+        return <OrdersTab orders={orders} />;
       case 'investment':
         return <InvestmentTab />;
       case 'settings':
@@ -155,8 +160,17 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ prof }) => (
     </form>
   </div>
 );
+interface OrderTabProps {
+  orders: {
+    id: string;
+    totalValue: string;
+    status: string;
+    createdAt: Date;
+   
+  }[];
+}
 
-const OrdersTab: React.FC = () => (
+const OrdersTab: React.FC<OrderTabProps> = ({ orders }) => (
   <div>
     <h2 className="font-playfair text-2xl font-bold mb-4 text-royal-header">Order History</h2>
     <div className="overflow-x-auto">
@@ -186,6 +200,20 @@ const OrdersTab: React.FC = () => (
               <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm">Processing</span>
             </td>
           </tr>
+        </tbody>
+        <tbody>
+          {orders.map(order => (
+            <tr key={order.id}>
+              <td className="border-t px-4 py-2">{order.id}</td>
+              <td className="border-t px-4 py-2">{order.createdAt.toLocaleDateString()}</td>
+              <td className="border-t px-4 py-2">{order.totalValue}</td>
+              <td className="border-t px-4 py-2">
+                <span className={`px-2 py-1 rounded-full text-sm ${order.status === 'Delivered' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                  {order.status}
+                </span>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

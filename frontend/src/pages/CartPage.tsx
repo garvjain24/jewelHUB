@@ -4,10 +4,12 @@ import api from '../api';
 
 interface CartItem {
   id: string;
-  name: string;
-  price: number;
+  product: {
+    name: string;
+    price: number;
+    imageUrl: string;
+  };
   quantity: number;
-  image: string;
 }
 
 const CartPage: React.FC = () => {
@@ -46,7 +48,7 @@ const CartPage: React.FC = () => {
   };
 
   const subtotal = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
+    (total, item) => total + item.product.price * item.quantity,
     0
   );
   const tax = subtotal * 0.1; // Assuming 10% tax
@@ -94,16 +96,16 @@ const CartPage: React.FC = () => {
                 className="flex items-center border-b border-royal-highlight py-4"
               >
                 <img
-                  src={item.image}
-                  alt={item.name}
+                  src={item.product.imageUrl}
+                  alt={item.product.name}
                   className="w-24 h-24 object-cover rounded-md mr-4"
                 />
                 <div className="flex-grow">
                   <h3 className="font-playfair text-xl font-semibold text-royal-header">
-                    {item.name}
+                    {item.product.name}
                   </h3>
                   <p className="text-royal-interactive font-bold">
-                    ₹{item.price}
+                    ₹{item.product.price}
                   </p>
                 </div>
                 <div className="flex items-center">

@@ -6,12 +6,12 @@ const AccountPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [userProfile, setUserProfile] = useState(null);
   const [orders, setOrders] = useState([]);
-  const [investments, setInvestments] = useState(null);
+  // const [investments, setInvestments] = useState(null);
 
   useEffect(() => {
     fetchUserProfile();
     fetchOrders();
-    fetchInvestments();
+    // fetchInvestments();
   }, []);
 
   const fetchUserProfile = async () => {
@@ -27,7 +27,7 @@ const AccountPage: React.FC = () => {
     const fetchOrders = async () => {
     try {
       const response = await api.user.getOrders();
-      const ordersWithDates = response.data.map(order => ({
+      const ordersWithDates = response.data.map((order: { _id: any; createdAt: string | number | Date; }) => ({
         ...order,
         id: order._id,
         createdAt: new Date(order.createdAt)
@@ -38,14 +38,14 @@ const AccountPage: React.FC = () => {
     }
   };
 
-  const fetchInvestments = async () => {
-    try {
-      const response = await api.user.getInvestments();
-      setInvestments(response.data);
-    } catch (error) {
-      console.error('Error fetching investments:', error);
-    }
-  };
+  // const fetchInvestments = async () => {
+  //   try {
+  //     const response = await api.user.getInvestments();
+  //     setInvestments(response.data);
+  //   } catch (error) {
+  //     console.error('Error fetching investments:', error);
+  //   }
+  // };
 
   // ... rest of the component remains the same, but use the fetched data in the respective tabs
   const renderTabContent = () => {

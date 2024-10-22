@@ -10,6 +10,8 @@ import InvestmentPage from './pages/InvestmentPage';
 import GiftCardPage from './pages/GiftCardPage';
 import LoginPage from './pages/LoginPage';
 import PrivateRoute from './components/PrivateRoute';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 /*
 API Endpoints:
 - POST /api/auth/signup - User Signup
@@ -41,6 +43,7 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-royal-light flex flex-col">
+        <ToastContainer />
         <Navbar />
         <main className="flex-grow">
           <Routes>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import { Search, Filter } from 'lucide-react';
 import api from '../api';
 
@@ -36,9 +37,10 @@ const ShopPage: React.FC = () => {
   const addToCart = async (productId: string) => {
     try {
       await api.cart.add({ productId, quantity: 1 });
-      // You can add a toast notification here to inform the user that the product was added to the cart
+      toast.success('Product added to cart!');
     } catch (error) {
-      console.error('Error adding to cart:', error);
+      toast.error('Error adding product to cart');
+      console.error('Error adding product to cart:', error);
     }
   };
 

@@ -21,7 +21,7 @@ const HomePage: React.FC = () => {
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="relative z-10 text-center">
-          <h1 className="font-playfair text-5xl md:text-7xl font-bold mb-4">Royal Jewels</h1>
+          <h1 className="font-playfair text-5xl md:text-7xl font-bold mb-4">Arté Jewels</h1>
           <p className="text-xl md:text-2xl mb-8">Exquisite Indian Jewelry for the Modern Royalty</p>
           <Link
             to="/shop"

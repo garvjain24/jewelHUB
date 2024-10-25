@@ -3,6 +3,7 @@ const auth = require('../middleware/auth');
 const Order = require('../models/Order');
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const router = express.Router();
 
@@ -34,11 +35,31 @@ router.post('/', auth, async (req, res) => {
       });
     }
 
+    // Create Stripe session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: orderItems.map(item => ({
+        price_data: {
+          currency: 'inr',
+          product_data: {
+            name: item.product.name || 'Product',
+            description: item.product.description || '',
+          },
+          unit_amount: Math.round(item.price * 100), // Convert to smallest currency unit (paise)
+        },
+        quantity: item.quantity,
+      })),
+      mode: 'payment',
+      success_url: `${process.env.FRONTEND_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.FRONTEND_URL}/checkout/cancel`,
+    });
+
     const order = new Order({
       user: req.user.userId,
       items: orderItems,
       totalValue,
-      status: 'Pending'
+      status: 'Pending',
+      stripeSessionId: session.id
     });
 
     await order.save();
@@ -49,7 +70,10 @@ router.post('/', auth, async (req, res) => {
       { $set: { items: [] } }
     );
 
-    res.status(201).json(order);
+    res.status(201).json({
+      _id: order._id,
+      checkoutUrl: session.url
+    });
   } catch (error) {
     console.error('Error creating order:', error);
     res.status(500).json({ error: 'Error creating order' });

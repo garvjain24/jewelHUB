@@ -4,10 +4,12 @@ import { Search, Filter } from 'lucide-react';
 import api from '../api';
 
 interface Product {
-  id: string;
+  _id: string; // Changed from id to _id to match MongoDB
   name: string;
   imageUrl: string;
   price: number;
+  category: string;
+  description: string;
 }
 
 const ShopPage: React.FC = () => {
@@ -15,6 +17,7 @@ const ShopPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -22,6 +25,7 @@ const ShopPage: React.FC = () => {
 
   const fetchProducts = async () => {
     try {
+      setLoading(true);
       const response = await api.products.getAll({
         search: searchTerm,
         minPrice: priceRange[0],
@@ -31,16 +35,22 @@ const ShopPage: React.FC = () => {
       setProducts(response.data);
     } catch (error) {
       console.error('Error fetching products:', error);
+      toast.error('Failed to load products');
+    } finally {
+      setLoading(false);
     }
   };
 
   const addToCart = async (productId: string) => {
     try {
+      if (!productId) {
+        throw new Error('Invalid product ID');
+      }
       await api.cart.add({ productId, quantity: 1 });
       toast.success('Product added to cart!');
     } catch (error) {
-      toast.error('Error adding product to cart');
       console.error('Error adding product to cart:', error);
+      toast.error('Failed to add product to cart');
     }
   };
 
@@ -104,32 +114,38 @@ const ShopPage: React.FC = () => {
 
       {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {products.map((product) => (
-          <div
-            key={product.id}
-            className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105"
-          >
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="w-full h-64 object-cover"
-            />
-            <div className="p-4">
-              <h3 className="font-playfair text-xl font-semibold mb-2 text-royal-header">
-                {product.name}
-              </h3>
-              <p className="text-royal-interactive font-bold mb-2">
-                ₹{product.price}
-              </p>
-              <button
-                onClick={() => addToCart(product.id)}
-                className="w-full bg-royal-button text-royal-dark py-2 rounded-full font-semibold hover:bg-royal-interactive hover:text-white transition-colors"
-              >
-                Add to Cart
-              </button>
+        {loading ? (
+          <div className="col-span-full text-center py-8">Loading...</div>
+        ) : products.length === 0 ? (
+          <div className="col-span-full text-center py-8">No products found</div>
+        ) : (
+          products.map((product) => (
+            <div
+              key={product._id}
+              className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105"
+            >
+              <img
+                src={product.imageUrl}
+                alt={product.name}
+                className="w-full h-64 object-cover"
+              />
+              <div className="p-4">
+                <h3 className="font-playfair text-xl font-semibold mb-2 text-royal-header">
+                  {product.name}
+                </h3>
+                <p className="text-royal-interactive font-bold mb-2">
+                  ₹{product.price.toLocaleString()}
+                </p>
+                <button
+                  onClick={() => addToCart(product._id)}
+                  className="w-full bg-royal-button text-royal-dark py-2 rounded-full font-semibold hover:bg-royal-interactive hover:text-white transition-colors"
+                >
+                  Add to Cart
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

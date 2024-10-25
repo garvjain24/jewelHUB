@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Trash2, Plus, Minus } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import api from '../api';
 
 interface CartItem {
@@ -18,6 +19,7 @@ const CartPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [couponCode, setCouponCode] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCart();
@@ -65,6 +67,12 @@ const CartPage: React.FC = () => {
   const handleCheckout = async () => {
     try {
       setLoading(true);
+      
+      if (cartItems.length === 0) {
+        toast.error('Your cart is empty');
+        return;
+      }
+
       const orderData = {
         items: cartItems.map(item => ({
           product: item.product._id,
@@ -74,21 +82,18 @@ const CartPage: React.FC = () => {
 
       const orderResponse = await api.order.create(orderData);
       
-      const paymentData = {
-        orderId: orderResponse.data._id,
-        giftCardCode: couponCode || undefined
-      };
+      if (!orderResponse.data._id) {
+        throw new Error('No order ID received');
+      }
 
-      const paymentResponse = await api.payment.checkout(paymentData);
-      
-      if (paymentResponse.data.url) {
-        window.location.href = paymentResponse.data.url;
+      if (orderResponse.data.checkoutUrl) {
+        window.location.href = orderResponse.data.checkoutUrl;
       } else {
         throw new Error('No checkout URL received');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error during checkout:', error);
-      toast.error('Checkout failed. Please try again.');
+      toast.error(error.response?.data?.error || 'Checkout failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -123,7 +128,7 @@ const CartPage: React.FC = () => {
                     {item.product.name}
                   </h3>
                   <p className="text-royal-interactive font-bold">
-                    ₹{item.product.price}
+                    ₹{item.product.price.toLocaleString()}
                   </p>
                 </div>
                 <div className="flex items-center">
@@ -160,15 +165,15 @@ const CartPage: React.FC = () => {
             <div className="space-y-2 mb-4">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>₹{subtotal.toFixed(2)}</span>
+                <span>₹{subtotal.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span>Tax (10%)</span>
-                <span>₹{tax.toFixed(2)}</span>
+                <span>₹{tax.toLocaleString()}</span>
               </div>
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>₹{total.toFixed(2)}</span>
+                <span>₹{total.toLocaleString()}</span>
               </div>
             </div>
             <div className="mb-4">

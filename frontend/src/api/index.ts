@@ -16,6 +16,7 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
     if (token) {
+      console.log(token)
       config.headers.set('x-auth-token', token);
     }
     return config;
@@ -43,7 +44,7 @@ export const auth = {
 
 export const cart = {
   get: () => api.get('/cart'),
-  add: (productData: any) => api.post('/cart', productData),
+  add: (productData:any) => api.post('/cart', productData),
   update: (itemId: string, data: any) => api.put(`/cart/${itemId}`, data),
   remove: (itemId: string) => api.delete(`/cart/${itemId}`),
 };

@@ -77,6 +77,7 @@ export const payment = {
 
 export const investment = {
   getRates: () => api.get('/investment/rates'),
+  getBalances: () => api.get('/investment/balances'),
   buy: (investmentData: any) => api.post('/investment/buy', investmentData),
   sell: (investmentData: any) => api.post('/investment/sell', investmentData),
 };

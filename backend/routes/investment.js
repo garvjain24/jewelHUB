@@ -3,7 +3,9 @@ const auth = require("../middleware/auth");
 const User = require("../models/User");
 const Investment = require("../models/Investment");
 
+
 const router = express.Router();
+
 
 // Get current rates
 router.get("/rates", async (req, res) => {
@@ -56,6 +58,17 @@ router.post("/buy", auth, async (req, res) => {
   }
 });
 
+router.get("/view", auth, async (req, res) => {
+  try {
+    const investments = await Investment.find({ user: req.user.userId }).sort({ createdAt: -1 });
+    res.status(200).json(investments);
+  } catch (error) {
+    console.error("Error fetching investments:", error);
+    res.status(500).json({ error: "Error fetching investments" });
+  }
+});
+
+
 // Sell digital gold or silver
 router.post("/sell", auth, async (req, res) => {
   try {
@@ -98,5 +111,15 @@ router.post("/sell", auth, async (req, res) => {
     res.status(500).json({ error: "Error processing investment" });
   }
 });
+
+router.get("/balances", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    res.json({ goldBalance: user.goldBalance, silverBalance: user.silverBalance });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 
 module.exports = router;

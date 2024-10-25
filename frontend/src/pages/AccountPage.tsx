@@ -248,8 +248,9 @@ const InvestmentTab: React.FC<{ userId: string }> = ({ userId }) => {
       <h2 className="font-playfair text-2xl font-bold mb-4 text-royal-header">Investment History</h2>
       {/* Display Gold and Silver Balances */}
       <div className="mb-4">
-        <div>Gold Balance: {goldBalance}</div>
-        <div>Silver Balance: {silverBalance}</div>
+        <div>Gold Balance: {goldBalance.toFixed(3)}</div>
+        <div>Silver Balance: {silverBalance.toFixed(3)}</div>
+        <div>Total amount: {(parseFloat(goldBalance.toFixed(3)) * 5300) + (parseFloat(silverBalance.toFixed(3))*300)}</div>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">
@@ -265,13 +266,14 @@ const InvestmentTab: React.FC<{ userId: string }> = ({ userId }) => {
           <tbody>
             {investments.map(investment => {
               const rate = investment.amount > 0 ? (investment.price / investment.amount).toFixed(2) : ((investment.price / investment.amount)).toFixed(2); // Calculate Rate
+              const price = investment.amount > 0 ? (investment.price) : ((investment.price * -1)); // Calculate Price
               return (
                 <tr key={investment._id}>
                   <td className="border-t px-4 py-2">{new Date(investment.createdAt).toLocaleDateString()}</td>
                   <td className="border-t px-4 py-2">{investment.type}</td>
                   <td className="border-t px-4 py-2">{investment.amount}</td>
                   <td className="border-t px-4 py-2">{rate}</td> {/* Display Rate */}
-                  <td className="border-t px-4 py-2">{investment.price}</td>
+                  <td className="border-t px-4 py-2">{price}</td>
                 </tr>
               );
             })}

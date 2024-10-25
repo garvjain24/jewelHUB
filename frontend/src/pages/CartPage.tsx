@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Trash2, Plus, Minus } from 'lucide-react';
+import { toast } from 'react-toastify';
 import api from '../api';
 
 interface CartItem {
-  id: string;
+  _id: string;
   product: {
+    _id: string;
     name: string;
     price: number;
     imageUrl: string;
@@ -15,6 +17,7 @@ interface CartItem {
 const CartPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [couponCode, setCouponCode] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchCart();
@@ -26,24 +29,29 @@ const CartPage: React.FC = () => {
       setCartItems(response.data);
     } catch (error) {
       console.error('Error fetching cart:', error);
+      toast.error('Failed to load cart items');
     }
   };
 
-  const updateQuantity = async (id: string, newQuantity: number) => {
+  const updateQuantity = async (itemId: string, newQuantity: number) => {
     try {
-      await api.cart.update(id, newQuantity);
+      if (newQuantity < 1) return;
+      await api.cart.update(itemId, { quantity: newQuantity });
       fetchCart();
     } catch (error) {
       console.error('Error updating quantity:', error);
+      toast.error('Failed to update quantity');
     }
   };
 
-  const removeItem = async (id: string) => {
+  const removeItem = async (itemId: string) => {
     try {
-      await api.cart.remove(id);
+      await api.cart.remove(itemId);
       fetchCart();
+      toast.success('Item removed from cart');
     } catch (error) {
       console.error('Error removing item:', error);
+      toast.error('Failed to remove item');
     }
   };
 
@@ -51,36 +59,38 @@ const CartPage: React.FC = () => {
     (total, item) => total + item.product.price * item.quantity,
     0
   );
-  const tax = subtotal * 0.1; // Assuming 10% tax
+  const tax = subtotal * 0.1; // 10% tax
   const total = subtotal + tax;
 
-    const handleCheckout = async () => {
+  const handleCheckout = async () => {
     try {
+      setLoading(true);
       const orderData = {
         items: cartItems.map(item => ({
-          productId: item.id,
+          product: item.product._id,
           quantity: item.quantity
         }))
       };
-      console.log('Order data:', orderData);
-  
+
       const orderResponse = await api.order.create(orderData);
-      console.log('Order response:', orderResponse.data);
-  
+      
       const paymentData = {
-        amount: total,
-        currency: 'inr',
-        orderId: orderResponse.data.id
+        orderId: orderResponse.data._id,
+        giftCardCode: couponCode || undefined
       };
-      console.log('Payment data:', paymentData);
-  
+
       const paymentResponse = await api.payment.checkout(paymentData);
-      console.log('Payment response:', paymentResponse.data);
-  
-      // Redirect to Stripe Checkout
-      window.location.href = paymentResponse.data.url;
+      
+      if (paymentResponse.data.url) {
+        window.location.href = paymentResponse.data.url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
     } catch (error) {
       console.error('Error during checkout:', error);
+      toast.error('Checkout failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -100,7 +110,7 @@ const CartPage: React.FC = () => {
           <div className="lg:w-2/3">
             {cartItems.map((item) => (
               <div
-                key={item.id}
+                key={item._id}
                 className="flex items-center border-b border-royal-highlight py-4"
               >
                 <img
@@ -118,22 +128,22 @@ const CartPage: React.FC = () => {
                 </div>
                 <div className="flex items-center">
                   <button
-                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                    className="p-1 bg-royal-button rounded-full"
+                    onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                    className="p-1 bg-royal-button rounded-full disabled:opacity-50"
                     disabled={item.quantity <= 1}
                   >
                     <Minus size={16} />
                   </button>
                   <span className="mx-2 font-semibold">{item.quantity}</span>
                   <button
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    onClick={() => updateQuantity(item._id, item.quantity + 1)}
                     className="p-1 bg-royal-button rounded-full"
                   >
                     <Plus size={16} />
                   </button>
                 </div>
                 <button
-                  onClick={() => removeItem(item.id)}
+                  onClick={() => removeItem(item._id)}
                   className="ml-4 text-royal-interactive hover:text-red-500"
                 >
                   <Trash2 size={20} />
@@ -153,7 +163,7 @@ const CartPage: React.FC = () => {
                 <span>₹{subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Tax</span>
+                <span>Tax (10%)</span>
                 <span>₹{tax.toFixed(2)}</span>
               </div>
               <div className="flex justify-between font-bold text-lg">
@@ -164,7 +174,7 @@ const CartPage: React.FC = () => {
             <div className="mb-4">
               <input
                 type="text"
-                placeholder="Enter coupon code"
+                placeholder="Enter gift card code"
                 className="w-full px-4 py-2 border border-royal-interactive rounded-full focus:outline-none focus:ring-2 focus:ring-royal-accent-diamond"
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value)}
@@ -172,9 +182,10 @@ const CartPage: React.FC = () => {
             </div>
             <button
               onClick={handleCheckout}
-              className="w-full bg-royal-interactive text-white py-3 rounded-full font-semibold hover:bg-royal-accent-diamond transition-colors"
+              disabled={loading || cartItems.length === 0}
+              className="w-full bg-royal-interactive text-white py-3 rounded-full font-semibold hover:bg-royal-accent-diamond transition-colors disabled:opacity-50"
             >
-              Proceed to Checkout
+              {loading ? 'Processing...' : 'Proceed to Checkout'}
             </button>
           </div>
         </div>

@@ -10,8 +10,13 @@ const GiftCardPage: React.FC = () => {
   const handleGenerateGiftCard = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await api.giftCard.generate({ amount: parseFloat(amount), recipientEmail });
-      setGiftCardCode(response.data.code);
+      const response = await api.giftCard.generate({ 
+        amount: parseFloat(amount), 
+        recipientEmail 
+      });
+      
+      // Redirect to Stripe Checkout
+      window.location.href = response.data.url;
     } catch (error) {
       console.error('Error generating gift card:', error);
     }

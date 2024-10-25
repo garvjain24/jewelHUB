@@ -137,7 +137,13 @@ const LoginPage: React.FC = () => {
           >
             {isLogin ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
           </button>
+          <br />
+          <br />
+          <Link to="/admin/login" className="font-medium text-royal-interactive hover:text-royal-accent-diamond">
+            ADMIN LOGIN
+          </Link>
         </div>
+        
       </div>
     </div>
   );

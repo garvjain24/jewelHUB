@@ -6,12 +6,12 @@ const AccountPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [userProfile, setUserProfile] = useState(null);
   const [orders, setOrders] = useState([]);
-  // const [investments, setInvestments] = useState(null);
+  const [investments, setInvestments] = useState(null);
 
   useEffect(() => {
     fetchUserProfile();
     fetchOrders();
-    // fetchInvestments();
+    fetchInvestments();
   }, []);
 
   const fetchUserProfile = async () => {
@@ -22,7 +22,7 @@ const AccountPage: React.FC = () => {
       console.error('Error fetching user profile:', error);
     }
   };
-  
+
 
     const fetchOrders = async () => {
     try {
@@ -38,14 +38,14 @@ const AccountPage: React.FC = () => {
     }
   };
 
-  // const fetchInvestments = async () => {
-  //   try {
-  //     const response = await api.user.getInvestments();
-  //     setInvestments(response.data);
-  //   } catch (error) {
-  //     console.error('Error fetching investments:', error);
-  //   }
-  // };
+  const fetchInvestments = async () => {
+    try {
+      const response = await api.user.getInvestments();
+      setInvestments(response.data);
+    } catch (error) {
+      console.error('Error fetching investments:', error);
+    }
+  };
 
   // ... rest of the component remains the same, but use the fetched data in the respective tabs
   const renderTabContent = () => {
@@ -53,7 +53,7 @@ const AccountPage: React.FC = () => {
       case 'profile':
         return userProfile ? <ProfileTab  prof={userProfile} /> : <div>Loading...</div>;
       case 'orders':
-        return <OrdersTab orders={orders} />;
+        return <OrdersTab orders={orders}/>;
       case 'investment':
         return <InvestmentTab />;
       case 'settings':

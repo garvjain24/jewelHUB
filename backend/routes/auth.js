@@ -49,4 +49,16 @@ router.post('/admin-login', async (req, res) => {
   }
 });
 
+router.post('/admin-signup', async (req, res) => {
+  try {
+    const { name, email, phone, address, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const admin = new Admin({ name, email, phone, address, password: hashedPassword });
+    await admin.save();
+    res.status(201).json({ message: 'Admin created successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error creating admin' });
+  }
+});
+
 module.exports = router;

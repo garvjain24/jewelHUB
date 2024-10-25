@@ -42,10 +42,10 @@ router.post("/", auth, async (req, res) => {
 router.get("/", auth, async (req, res) => {
   try {
     const cart = await Cart.findOne({ user: req.user.userId })
-      .populate({
-        path: 'items.product',  // Populates the product field in the items array
-        select: 'name price imageUrl' // Fetch only name, price, and image from the Product model
-      });
+    .populate({
+      path: 'items.product',  // Populates the product field in the items array
+      select: 'name price imageUrl' // Fetch only name, price, and image from the Product model
+    });
 
     if (!cart) return res.status(404).json({ error: "Cart not found" });
     

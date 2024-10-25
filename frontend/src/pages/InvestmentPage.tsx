@@ -3,8 +3,8 @@ import { TrendingUp, TrendingDown } from 'lucide-react';
 import api from '../api';
 
 const InvestmentPage: React.FC = () => {
-  const [rates, setRates] = useState({ gold: 0, silver: 0 });
-  const [investmentType, setInvestmentType] = useState('gold');
+  const [rates, setRates] = useState({ goldRate: 0, silverRate: 0 });
+  const [investmentType, setInvestmentType] = useState('Gold');
   const [amount, setAmount] = useState('');
 
   useEffect(() => {
@@ -42,14 +42,14 @@ const InvestmentPage: React.FC = () => {
           <div className="flex justify-between items-center mb-4">
             <div>
               <p className="text-lg font-semibold">Gold</p>
-              <p className="text-2xl font-bold text-royal-interactive">₹{rates.gold}/g</p>
+              <p className="text-2xl font-bold text-royal-interactive">₹{rates.goldRate}/g</p>
             </div>
             <TrendingUp className="text-green-500" size={24} />
           </div>
           <div className="flex justify-between items-center">
             <div>
               <p className="text-lg font-semibold">Silver</p>
-              <p className="text-2xl font-bold text-royal-interactive">₹{rates.silver}/g</p>
+              <p className="text-2xl font-bold text-royal-interactive">₹{rates.silverRate}/g</p>
             </div>
             <TrendingDown className="text-red-500" size={24} />
           </div>
@@ -66,8 +66,8 @@ const InvestmentPage: React.FC = () => {
                 value={investmentType}
                 onChange={(e) => setInvestmentType(e.target.value)}
               >
-                <option value="gold">Gold</option>
-                <option value="silver">Silver</option>
+                <option value="Gold">Gold</option>
+                <option value="Silver">Silver</option>
               </select>
             </div>
             <div className="mb-4">
@@ -84,7 +84,7 @@ const InvestmentPage: React.FC = () => {
             </div>
             <div className="mb-4">
               <p className="text-lg font-semibold">
-                Total Cost: ₹{(parseFloat(amount) * (investmentType === 'gold' ? rates.gold : rates.silver)).toFixed(2)}
+                Total Cost: ₹{(parseFloat(amount) * (investmentType === 'Gold' ? rates.goldRate : rates.silverRate)).toFixed(2)}
               </p>
             </div>
             <button

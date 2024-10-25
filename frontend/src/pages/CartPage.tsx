@@ -54,7 +54,7 @@ const CartPage: React.FC = () => {
   const tax = subtotal * 0.1; // Assuming 10% tax
   const total = subtotal + tax;
 
-  const handleCheckout = async () => {
+    const handleCheckout = async () => {
     try {
       const orderData = {
         items: cartItems.map(item => ({
@@ -62,13 +62,21 @@ const CartPage: React.FC = () => {
           quantity: item.quantity
         }))
       };
+      console.log('Order data:', orderData);
+  
       const orderResponse = await api.order.create(orderData);
-      const paymentResponse = await api.payment.checkout({
+      console.log('Order response:', orderResponse.data);
+  
+      const paymentData = {
         amount: total,
         currency: 'inr',
         orderId: orderResponse.data.id
-      });
-      
+      };
+      console.log('Payment data:', paymentData);
+  
+      const paymentResponse = await api.payment.checkout(paymentData);
+      console.log('Payment response:', paymentResponse.data);
+  
       // Redirect to Stripe Checkout
       window.location.href = paymentResponse.data.url;
     } catch (error) {

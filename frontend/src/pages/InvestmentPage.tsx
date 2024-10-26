@@ -37,21 +37,12 @@ const InvestmentPage: React.FC = () => {
     e.preventDefault();
     try {
       if (action === 'buy') {
-        const response = await api.investment.buy({ 
-          type: investmentType, 
-          amount: parseFloat(amount) 
-        });
-        
-        // Redirect to Stripe Checkout
-        window.location.href = response.data.url;
+        await api.investment.buy({ type: investmentType, amount: parseFloat(amount) });
       } else {
-        await api.investment.sell({ 
-          type: investmentType, 
-          amount: parseFloat(amount) 
-        });
-        setAmount('');
-        fetchBalances();
+        await api.investment.sell({ type: investmentType, amount: parseFloat(amount) });
       }
+      setAmount('');
+      fetchBalances(); // Refresh balances after action
     } catch (error) {
       console.error(`Error ${action === 'buy' ? 'investing' : 'selling'}:`, error);
     }

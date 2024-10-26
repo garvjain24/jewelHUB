@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -14,16 +14,22 @@ const sendOrderConfirmation = async (order, user) => {
   const mailOptions = {
     from: process.env.SMTP_FROM,
     to: user.email,
-    subject: 'Order Confirmation - Royal Jewels',
+    subject: "Order Confirmation - Arté Jewels",
     html: `
       <h1>Thank you for your order!</h1>
       <p>Order ID: ${order._id}</p>
       <p>Total Amount: ₹${order.totalValue}</p>
       <h2>Order Details:</h2>
       <ul>
-        ${order.items.map(item => `
-          <li>${item.product.name} x ${item.quantity} - ₹${item.price * item.quantity}</li>
-        `).join('')}
+        ${order.items
+          .map(
+            (item) => `
+          <li>${item.product.name} x ${item.quantity} - ₹${
+              item.price * item.quantity
+            }</li>
+        `
+          )
+          .join("")}
       </ul>
     `,
   };
@@ -35,7 +41,7 @@ const sendGiftCard = async (giftCard, recipientEmail) => {
   const mailOptions = {
     from: process.env.SMTP_FROM,
     to: recipientEmail,
-    subject: 'Your Royal Jewels Gift Card',
+    subject: "Your Arté Jewels Gift Card",
     html: `
       <h1>Your Gift Card Details</h1>
       <p>Amount: ₹${giftCard.amount}</p>
@@ -51,13 +57,13 @@ const sendInvestmentConfirmation = async (investment, user) => {
   const mailOptions = {
     from: process.env.SMTP_FROM,
     to: user.email,
-    subject: 'Investment Confirmation - Royal Jewels',
+    subject: "Investment Confirmation - Arté Jewels",
     html: `
       <h1>Investment Confirmation</h1>
       <p>Type: ${investment.type}</p>
       <p>Amount: ${Math.abs(investment.amount)}g</p>
       <p>Value: ₹${investment.price}</p>
-      <p>Transaction Type: ${investment.amount > 0 ? 'Purchase' : 'Sale'}</p>
+      <p>Transaction Type: ${investment.amount > 0 ? "Purchase" : "Sale"}</p>
     `,
   };
 
@@ -67,5 +73,5 @@ const sendInvestmentConfirmation = async (investment, user) => {
 module.exports = {
   sendOrderConfirmation,
   sendGiftCard,
-  sendInvestmentConfirmation
-}
+  sendInvestmentConfirmation,
+};

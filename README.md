@@ -1,4 +1,4 @@
-# Royal Jewels E-commerce Platform
+# Arté Jewels E-commerce Platform
 
 This project consists of a frontend built with React and a backend built with Node.js and Express.
 
@@ -31,16 +31,19 @@ royal-jewels/
 ### Backend Setup
 
 1. Navigate to the backend directory:
+
    ```
    cd backend
    ```
 
 2. Install dependencies:
+
    ```
    npm install
    ```
 
 3. Create a `.env` file in the backend directory and add your environment variables:
+
    ```
    MONGODB_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret
@@ -58,11 +61,13 @@ The backend server will start running on `http://localhost:5000`.
 ### Frontend Setup
 
 1. Navigate to the frontend directory:
+
    ```
    cd frontend
    ```
 
 2. Install dependencies:
+
    ```
    npm install
    ```

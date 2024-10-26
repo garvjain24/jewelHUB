@@ -20,72 +20,39 @@ router.get("/rates", async (req, res) => {
 router.post("/buy", auth, async (req, res) => {
   try {
     const { type, amount } = req.body;
-    const rates = { Gold: 5300, Silver: 100 };
-    const price = amount * rates[type];
+    const user = await User.findById(req.user.userId);
+    const rates = { Gold: 5300, Silver: 100 }; // Fetch these from your database in a real application
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price_data: {
-            currency: "inr",
-            product_data: {
-              name: `Digital ${type}`,
-              description: `${amount}g of Digital ${type}`,
-            },
-            unit_amount: price * 100,
-          },
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      success_url: `${process.env.FRONTEND_URL}/investment?session_id={CHECKOUT_SESSION_ID}&type=buy`,
-      cancel_url: `${process.env.FRONTEND_URL}/investment`,
+    if (!rates[type]) {
+      return res.status(400).json({ error: "Invalid investment type" });
+    }
+
+    const price = amount * rates[type];
+    if (isNaN(price)) {
+      return res.status(400).json({ error: "Invalid price calculation" });
+    }
+
+    const investment = new Investment({
+      user: req.user.userId,
+      type,
+      amount,
+      price: amount * rates[type],
     });
 
-    res.json({ url: session.url, sessionId: session.id });
+    await investment.save();
+
+    if (type === "Gold") {
+      user.goldBalance += amount;
+    } else {
+      user.silverBalance += amount;
+    }
+
+    await user.save();
+
+    res.status(201).json(investment);
   } catch (error) {
     console.error("Error processing investment:", error);
     res.status(500).json({ error: "Error processing investment" });
-  }
-});
-
-router.post("/verify-buy", auth, async (req, res) => {
-  try {
-    const { sessionId, type, amount } = req.body;
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-
-    if (session.payment_status === "paid") {
-      const user = await User.findById(req.user.userId);
-      const rates = { Gold: 5300, Silver: 100 };
-
-      const investment = new Investment({
-        user: req.user.userId,
-        type,
-        amount,
-        price: amount * rates[type],
-      });
-
-      await investment.save();
-
-      if (type === "Gold") {
-        user.goldBalance += amount;
-      } else {
-        user.silverBalance += amount;
-      }
-
-      await user.save();
-
-      // Send investment confirmation email
-      await sendInvestmentConfirmation(investment, user);
-
-      res.json({ success: true });
-    } else {
-      res.status(400).json({ error: "Payment not completed" });
-    }
-  } catch (error) {
-    console.error("Error verifying investment:", error);
-    res.status(500).json({ error: "Error verifying investment" });
   }
 });
 

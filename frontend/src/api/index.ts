@@ -17,6 +17,7 @@ api.interceptors.request.use(
     const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
     if (token) {
       config.headers.set('x-auth-token', token);
+      config.headers.set('Authorization', `Bearer ${token}`);
     }
     return config;
   },
@@ -43,7 +44,7 @@ export const auth = {
 
 export const cart = {
   get: () => api.get('/cart'),
-  add: (productData: any) => api.post('/cart', productData),
+  add: (productData:any) => api.post('/cart', productData),
   update: (itemId: string, data: any) => api.put(`/cart/${itemId}`, data),
   remove: (itemId: string) => api.delete(`/cart/${itemId}`),
 };
@@ -66,13 +67,11 @@ export const products = {
   update: (id: string, productData: any) => api.put(`/products/${id}`, productData),
   delete: (id: string) => api.delete(`/products/${id}`),
 };
-
 export const investment = {
   getRates: () => api.get('/investment/rates'),
   getBalances: () => api.get('/investment/balances'),
   buy: (investmentData: any) => api.post('/investment/buy', investmentData),
   sell: (investmentData: any) => api.post('/investment/sell', investmentData),
-  verifyBuy: (sessionId: string, data: any) => api.post('/investment/verify-buy', { sessionId, ...data }),
 };
 
 export const giftCard = {
@@ -80,7 +79,9 @@ export const giftCard = {
   verifyPurchase: (sessionId: string, data: any) => api.post('/giftcard/verify-purchase', { sessionId, ...data }),
   getDetails: (code: string) => api.get(`/giftcard/${code}`),
   redeem: (redeemData: any) => api.post('/giftcard/redeem', redeemData),
-}
+  sendEmail: (emailData: any) => api.post('/giftcard/send-email', emailData), // Add this line
+};
+
 export const user = {
   getProfile: () => api.get('/user/profile'),
   updateProfile: (userData: any) => api.put('/user/profile', userData),

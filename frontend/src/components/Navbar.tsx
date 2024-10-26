@@ -36,7 +36,7 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link to="/" className="flex items-center space-x-2">
           <Diamond className="text-royal-accent-diamond" />
-          <span className="font-playfair text-2xl font-bold">Royal Jewels</span>
+          <span className="font-playfair text-2xl font-bold">Arté Jewels</span>
         </Link>
         <div className="flex items-center space-x-6">
           <Link

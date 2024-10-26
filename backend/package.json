@@ -1,7 +1,7 @@
 {
   "name": "royal-jewels-backend",
   "version": "1.0.0",
-  "description": "Backend for Royal Jewels E-commerce Platform",
+  "description": "Backend for Arté Jewels E-commerce Platform",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",

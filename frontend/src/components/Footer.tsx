@@ -7,7 +7,7 @@ const Footer: React.FC = () => {
     <footer className="bg-royal-footer text-white py-8">
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
-          <h3 className="font-playfair text-xl font-bold mb-4">Royal Jewels</h3>
+          <h3 className="font-playfair text-xl font-bold mb-4">Arté Jewels</h3>
           <p className="mb-4">Exquisite Indian jewelry for the modern royalty.</p>
           <div className="flex items-center space-x-4">
             <a href="#" className="text-royal-accent-diamond hover:text-royal-highlight transition-colors">
@@ -56,7 +56,7 @@ const Footer: React.FC = () => {
         </div>
       </div>
       <div className="mt-8 text-center text-sm">
-        <p>&copy; 2024 Royal Jewels. All rights reserved.</p>
+        <p>&copy; 2024 Arté Jewels. All rights reserved.</p>
         <div className="mt-2">
           <Link to="#" className="hover:text-royal-accent-diamond transition-colors">Privacy Policy</Link>
           <span className="mx-2">|</span>

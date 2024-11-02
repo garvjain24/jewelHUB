@@ -21,6 +21,7 @@ import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import PrivateRoute from './components/PrivateRoute';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
+//import CheckoutPage from './pages/CheckoutPage';
 
 function App() {
   return (
@@ -62,6 +63,9 @@ function App() {
             <Route path="users" element={<AdminUserManagement />} />
             <Route path="investments" element={<AdminInvestmentData />} />
             <Route path="gift-cards" element={<AdminGiftCardManagement />} />
+          </Route>
+          <Route path="/checkout" element={<PrivateRoute />}>
+            {/* <Route path="/checkout" element={<CheckoutPage />} /> */}
           </Route>
         </Routes>
       </main>

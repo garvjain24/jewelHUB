@@ -54,7 +54,7 @@ const AccountPage: React.FC = () => {
       case 'orders':
         return <OrdersTab orders={orders} />;
       case 'investment':
-        return userProfile ? <InvestmentTab userId={investments} /> : <div>Loading...</div>;
+        return userProfile ? <InvestmentTab userId={userProfile} /> : <div>Loading...</div>;
       case 'settings':
         return <SettingsTab />;
       default:
@@ -221,7 +221,7 @@ const InvestmentTab: React.FC<{ userId: string }> = ({ userId }) => {
 
   const fetchInvestments = async () => {
     try {
-      const response = await api.user.getInvestments(userId);
+      const response = await api.user.getInvestments();
       // Ensure response.data is an object
       if (response.data && typeof response.data === 'object') {
         setGoldBalance(response.data.goldBalance);

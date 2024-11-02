@@ -71,7 +71,7 @@ const HomePage: React.FC = () => {
           <div className="md:w-1/2 md:pl-12">
             <h2 className="font-playfair text-4xl font-bold mb-6 text-royal-header">Our Heritage</h2>
             <p className="text-lg mb-6 text-royal-dark">
-              At Royal Jewels, we blend centuries-old Indian craftsmanship with contemporary design. Each piece tells a story of tradition, luxury, and artistry, crafted to adorn the modern royalty in you.
+              At Arté Jewels, we blend centuries-old Indian craftsmanship with contemporary design. Each piece tells a story of tradition, luxury, and artistry, crafted to adorn the modern royalty in you.
             </p>
             <Link
               to="#"
